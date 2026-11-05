@@ -71,14 +71,19 @@ Combines **parameter-efficient fine-tuning (QLoRA on Qwen 2.5 7B)** for style an
 ## Repository Structure
 
 ```
+├── .env.example                 # Environment configuration template
 ├── .gitignore                   # Excludes raw chats, models, and personal data
 ├── Modelfile                    # Ollama configuration
 ├── bot.py                       # Main agent engine with RAG integration & CLI tester
 ├── kaggle_train_unsloth.py      # Unsloth fine-tuning script for Kaggle/Colab
 ├── preprocess.py                # Chat parser, burst merger & ChatML dataset generator
 ├── rag_engine.py                # Supabase pgvector retrieval & dynamic prompt assembler
+├── requirements.txt             # Python dependencies
+├── run_live_whatsapp.bat        # Automated launcher for Live WhatsApp Business Daemon
 ├── run_server.bat               # Automated local LLM server launcher
 ├── seed_rag.py                  # Embeds entities & historical memories into Supabase
+├── whatsapp_client.py           # Official WhatsApp Agent Platform API client
+├── whatsapp_live_bot.py         # 24/7 Live WhatsApp long-polling bot daemon
 ├── whatsapp_twin_training.ipynb # Kaggle notebook for 1-click training
 └── README.md                    # System documentation
 ```
@@ -119,13 +124,33 @@ Run the automated launcher:
 * Dynamically binds your fine-tuned `lora_model.gguf`.
 * Listens on `http://127.0.0.1:8080`.
 
-### 5. Chat with Your Digital Twin
+### 5. Chat via Terminal (Interactive Test)
 In another terminal:
 ```bash
 python bot.py
 ```
 * With RAG enabled (default), it semantically retrieves real facts and past conversations.
 * To compare without RAG, run: `python bot.py --no-rag`.
+
+---
+
+## Live 24/7 WhatsApp Business Chat Integration
+
+This project integrates directly with the official **WhatsApp Agent Platform API** (`https://api.whatsapp.com/agent/v1`), allowing your digital twin to chat live with real users on WhatsApp without brittle browser automation or QR-code scrapers.
+
+### How It Works:
+1. **Long-Poll Event Stream:** Calls `GET /agent/v1/updates` with a 15-second holding window to receive incoming messages in real-time.
+2. **Instant Read Receipts & Typing Status:** When a message arrives, it immediately fires `POST /agent/v1/statuses` marking the message as read and triggering a live typing indicator on the user's phone.
+3. **Grounded Generation & Burst Delivery:** Context is retrieved from Supabase pgvector, inferred through Qwen 2.5 7B LoRA, split into natural multi-bubble bursts, and dispatched via `POST /agent/v1/messages`.
+4. **Offset Persistence:** Tracks `last_offset.json` locally so restarts resume seamlessly without duplicate replies.
+
+### Running Live on WhatsApp:
+1. Ensure `run_server.bat` is running in Terminal 1.
+2. Start the live WhatsApp listener in Terminal 2:
+```cmd
+.\run_live_whatsapp.bat
+```
+*(Or run `python whatsapp_live_bot.py`)*
 
 ---
 

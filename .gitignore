@@ -9,12 +9,14 @@ venv/
 
 # Personal Data & Chat Exports (CRITICAL: Do not upload personal conversations)
 *.txt
+!requirements.txt
 data/
 *.jsonl
 
 # Databases & Local History
 *.db
 *.sqlite3
+last_offset.json
 
 # Large Model Weights (Keep out of git history)
 *.gguf

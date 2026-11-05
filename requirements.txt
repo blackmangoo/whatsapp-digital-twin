@@ -1,0 +1,5 @@
+# Local Python requirements for WhatsApp Digital Twin & Live WhatsApp Client
+requests>=2.31.0
+pydantic>=2.0.0
+pandas>=2.0.0
+sentence-transformers>=2.2.0
