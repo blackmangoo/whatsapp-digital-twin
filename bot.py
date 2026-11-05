@@ -175,14 +175,14 @@ class WhatsAppTwinAgent:
                         data = json.loads(resp.read().decode("utf-8"))
                         raw_reply = data["message"]["content"].strip()
                 except Exception as inner_e:
-                    print(f"[Error] Failed to connect to LLM server on {LLM_API_BASE}: {inner_e}")
-                    return ["(Error: LLM server not responding)"], 0.0
+                    print(f"[Warning] LLM server not yet ready on {LLM_API_BASE}: {inner_e}")
+                    return ["Bhai local LLM server load ho raha hai, 1 min ruko bas."], 2.0
             else:
                 print(f"[Error] HTTP {e.code} from LLM server: {e}")
-                return ["(Error: LLM server returned error)"], 0.0
+                return ["Bhai server pe thora load hai, abhi reply karta hun."], 2.0
         except Exception as e:
-            print(f"[Error] Request failed: {e}")
-            return ["(Error: LLM server timeout or connection failure)"], 0.0
+            print(f"[Warning] Request failed: {e}")
+            return ["Bhai local LLM server load ho raha hai, 1 min ruko bas."], 2.0
 
         # Save assistant reply to memory
         self.memory.add_message(sender_id, "assistant", raw_reply)
